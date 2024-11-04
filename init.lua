@@ -27,7 +27,7 @@ require('nixCatsUtils').setup {
 -- and you should keep any setup functions
 -- OUT of that file, as they are ONLY loaded when this
 -- configuration is NOT loaded via nix.
-require("myLuaConf.non_nix_download")
+require("config.non_nix_download")
 -- OK, again, that isnt needed if you load this setup via nix, but it is an option.
 
 --[[
@@ -70,4 +70,4 @@ and then disable the build steps when not on nix.
 -- and the lua/myLuaConf/non_nix_download.lua file.
 -- the rest is just example of how to configure nvim making use of various
 -- features of nixCats and using the plugin lze for lazy loading.
-require('myLuaConf')
+require('lua.config.init')
