@@ -5,6 +5,25 @@ local load_w_after_plugin = require('nixCatsUtils.lzUtils').make_load_with_after
 -- NOTE: packadd doesnt load after directories.
 -- hence, the above function that you can get from luaUtils that exists to make that easy.
 
+---Append base sources for cmp to specific sources for a filetype
+---If you just want to use base sources, pass empty table
+---@type fun(sources: table): table
+local append_base_sources = function (sources)
+  local base_sources = {
+    { name = 'nvim_lsp'},
+    { name = 'nvim_lsp_signature_help', keyword_length = 3 },
+    { name = 'path' },
+    { name = 'luasnip' },
+    { name = 'buffer', keyword_length = 5 },
+  }
+  for _, value in ipairs(base_sources) do
+    table.insert(sources, value)
+  end
+  
+  return sources
+end
+
+
 return {
   {
     "cmp-buffer",
@@ -125,14 +144,18 @@ return {
           end,
         },
         mapping = cmp.mapping.preset.insert {
-          ['<C-p>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-n>'] = cmp.mapping.scroll_docs(4),
+          ['<C-j>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-k>'] = cmp.mapping.scroll_docs(4),
           ['<C-Space>'] = cmp.mapping.complete {},
           ['<CR>'] = cmp.mapping.confirm {
             behavior = cmp.ConfirmBehavior.Replace,
             select = true,
           },
-          ['<Tab>'] = cmp.mapping(function(fallback)
+          ['<C-l>'] = cmp.mapping.confirm {
+            behavior = cmp.ConfirmBehavior.Replace,
+            select = true,
+          },
+          ['<C-n>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
             elseif luasnip.expand_or_locally_jumpable() then
@@ -141,7 +164,7 @@ return {
               fallback()
             end
           end, { 'i', 's' }),
-          ['<S-Tab>'] = cmp.mapping(function(fallback)
+          ['<C-p>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()
             elseif luasnip.locally_jumpable(-1) then
@@ -152,14 +175,8 @@ return {
           end, { 'i', 's' }),
         },
 
-        sources = cmp.config.sources {
-          -- The insertion order influences the priority of the sources
-          { name = 'nvim_lsp'--[[ , keyword_length = 3 ]] },
-          { name = 'nvim_lsp_signature_help'--[[ , keyword_length = 3  ]]},
-          { name = 'path' },
-          { name = 'luasnip' },
-          { name = 'buffer' },
-        },
+        -- Using base sources for default filetype
+        sources = cmp.config.sources (append_base_sources({})),
         enabled = function()
           return vim.bo[0].buftype ~= 'prompt'
         end,
@@ -170,14 +187,12 @@ return {
       }
 
       cmp.setup.filetype('lua', {
-        sources = cmp.config.sources {
-          { name = 'nvim_lua' },
-          { name = 'nvim_lsp'--[[ , keyword_length = 3  ]]},
-          { name = 'nvim_lsp_signature_help'--[[ , keyword_length = 3  ]]},
-          { name = 'path' },
-          { name = 'luasnip' },
-          { name = 'buffer' },
-        },{
+        sources = cmp.config.sources (
+          append_base_sources({
+            { name = 'nvim_lua' },
+          })
+        ),
+        {
           {
             name = 'cmdline',
             option = {

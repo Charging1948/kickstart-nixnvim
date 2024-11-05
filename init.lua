@@ -2,8 +2,8 @@
 NOTE:
 if you plan to always load your nixCats via nix,
 you can safely ignore this setup call,
-and the require('myLuaConf.non_nix_download') call below it.
-as well as the entire lua/myLuaConf/non_nix_download file.
+and the require('config.non_nix_download') call below it.
+as well as the entire lua/config/non_nix_download file.
 Unless you want the lzUtils file, or the lazy wrapper, you also wont need lua/nixCatsUtils
 
 IF YOU DO NOT DO THIS SETUP CALL:
@@ -64,10 +64,10 @@ and then disable the build steps when not on nix.
 -- it is not required, but has some useful utility functions
 -- feel free to take what you want from it and delete the other files.
 
--- NOTE: ok thats enough for 1 file. Off to lua/myLuaConf/init.lua
+-- NOTE: ok thats enough for 1 file. Off to lua/config/init.lua
 -- all the config starts there in this example config.
 -- This config is loadable with and without nix due to the above,
--- and the lua/myLuaConf/non_nix_download.lua file.
+-- and the lua/config/non_nix_download.lua file.
 -- the rest is just example of how to configure nvim making use of various
 -- features of nixCats and using the plugin lze for lazy loading.
-require('lua.config.init')
+require('config.init')

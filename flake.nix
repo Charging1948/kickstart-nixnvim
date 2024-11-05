@@ -115,20 +115,39 @@
         ];
         # these names are arbitrary.
         lint = with pkgs; [
+          golangci-lint
+          ruff
+          editorconfig-checker
+          statix
+          deadnix
+          deno
+          dotenv-linter
+          yamllint
+          html-tidy
+          selene
         ];
         # but you can choose which ones you want
         # per nvim package you export
         debug = with pkgs; {
           go = [ delve ];
         };
-        go = with pkgs; [
-          gopls
-          gotools
-          go-tools
-          gccgo
-        ];
+        languages = {
+          go = with pkgs; [
+            gopls
+            gotools
+            go-tools
+            gccgo
+            ginkgo
+            gotestsum
+            golangci-lint-langserver
+          ];
+        };
         # and easily check if they are included in lua
         format = with pkgs; [
+          ruff
+          gofumpt
+          golines
+          gotools
         ];
         neonixdev = {
           # also you can do this.
@@ -152,7 +171,7 @@
           ];
           extra = [
             oil-nvim
-            nvim-web-devicons
+            mini-icons
           ];
         };
         # You can retreive information from the
@@ -183,7 +202,10 @@
           nvim-dap-ui
           nvim-dap-virtual-text
         ]) (with pkgs.vimPlugins; {
-          go = [ nvim-dap-go ];
+          go = [ 
+            nvim-dap-go
+            go-nvim
+          ];
         });
         lint = with pkgs.vimPlugins; [
           nvim-lint
@@ -257,7 +279,7 @@
       # variable available to nvim runtime
       sharedLibraries = {
         general = with pkgs; [ # <- this would be included if any of the subcategories of general are
-          # libgit2
+          libgit2
         ];
       };
 
@@ -315,7 +337,34 @@
     # The get function is to prevent errors when querying subcategories.
 
     # see :help nixCats.flake.outputs.packageDefinitions
-    packageDefinitions = {
+    packageDefinitions = 
+    let
+      default_categories = {
+        markdown = true;
+        general = true;
+        lint = true;
+        format = true;
+        neonixdev = true;
+        test = {
+          subtest1 = true;
+        };
+        go = true; # <- disabled but you could enable it with override
+        debug.go = true; # <- disabled but you could enable it with override
+      
+        # this does not have an associated category of plugins, 
+        # but lua can still check for it
+        lspDebugMode = false;
+        # you could also pass something else:
+        # see :help nixCats
+        themer = true;
+        colorscheme = "catppuccin";
+        nixdExtras = {
+          nixpkgs = nixpkgs.outPath;
+          flake-path = "/home/jk/.config/dotfiles";
+        };
+      };
+    in 
+    {
       # the name here is the name of the package
       # and also the default command name for it.
       nixCats = { pkgs, ... }@misc: {
@@ -329,29 +378,7 @@
           # neovim-unwrapped = inputs.neovim-nightly-overlay.packages.${pkgs.system}.neovim;
         };
         # see :help nixCats.flake.outputs.packageDefinitions
-        categories = {
-          markdown = true;
-          general = true;
-          lint = true;
-          format = true;
-          neonixdev = true;
-          test = {
-            subtest1 = true;
-          };
-          # go = true; # <- disabled but you could enable it with override
-          # debug.go = true; # <- disabled but you could enable it with override
-
-          # this does not have an associated category of plugins, 
-          # but lua can still check for it
-          lspDebugMode = false;
-          # you could also pass something else:
-          # see :help nixCats
-          themer = true;
-          colorscheme = "onedark";
-          nixdExtras = {
-            nixpkgs = nixpkgs.outPath;
-          };
-        };
+        categories = default_categories;
       };
       regularCats = { pkgs, ... }@misc: {
         settings = {
@@ -363,38 +390,7 @@
           aliases = [ "testCat" ];
           # neovim-unwrapped = inputs.neovim-nightly-overlay.packages.${pkgs.system}.neovim;
         };
-        categories = {
-          markdown = true;
-          general = true;
-          neonixdev = true;
-          lint = true;
-          format = true;
-          test = true;
-          # go = true; # <- disabled but you could enable it with override
-          # debug.go = true; # <- disabled but you could enable it with override
-          lspDebugMode = false;
-          themer = true;
-          colorscheme = "catppuccin";
-          nixdExtras = {
-            # note, use outPath here instead of just
-            # putting the derivation. otherwise,
-            # nix would try to evaluate the entire nixpkgs.
-            nixpkgs = nixpkgs.outPath;
-          };
-          theBestCat = "says meow!!";
-          # yes even tortured inputs work.
-          theWorstCat = {
-            thing'1 = [ "MEOW" '']]' ]=][=[HISSS]]"[['' ];
-            thing2 = [
-              {
-                thing3 = [ "give" "treat" ];
-              }
-              "I LOVE KEYBOARDS"
-              (utils.mkLuaInline ''[[I am a]] .. [[ lua ]] .. type("value")'')
-            ];
-            thing4 = "couch is for scratching";
-          };
-        };
+        categories = default_categories;
       };
     };
 

@@ -37,19 +37,17 @@ if nixCats('neonixdev') then
     -- that way it will ALWAYS work, regardless
     -- of where your config actually was.
     -- otherwise flake-path could be an absolute path to your system flake, or nil or false
-    if nixCats("nixdExtras.flake-path") and nixCats("nixdExtras.systemCFGname") and nixCats("nixdExtras.homeCFGname") then
+    if nixCats("nixdExtras.flake-path") then
       servers.nixd.nixd.options = {
         -- (builtins.getFlake "<path_to_system_flake>").nixosConfigurations."<name>".options
         nixos = {
-          expr = [[(builtins.getFlake "]] ..
-            nixCats("nixdExtras.flake-path") ..  [[").nixosConfigurations."]] ..
-            nixCats("nixdExtras.systemCFGname") .. [[".options]]
+          expr = [[let configs = (builtins.getFlake ("]] ..
+            nixCats("nixdExtras.flake-path") ..  [[")).nixosConfigurations; in (builtins.head (builtins.attrValues configs)).options"]]
         },
         -- (builtins.getFlake "<path_to_system_flake>").homeConfigurations."<name>".options
         ["home-manager"] = {
-          expr = [[(builtins.getFlake "]] ..
-            nixCats("nixdExtras.flake-path") .. [[").homeConfigurations."]] ..
-            nixCats("nixdExtras.homeCFGname") .. [[".options]]
+          expr = [[let configs = (builtins.getFlake ("]] ..
+            nixCats("nixdExtras.flake-path") ..  [[")).homeConfigurations; in (builtins.head (builtins.attrValues configs)).options"]]
         }
       }
     end
@@ -60,8 +58,9 @@ if nixCats('neonixdev') then
 
 end
 
-if nixCats('go') then
+if nixCats('languages.go') then
   servers.gopls = {}
+  servers.golangci_lint_ls = {}
 end
 
 -- This is this flake's version of what kickstarter has set up for mason handlers.
@@ -92,12 +91,12 @@ end
 -- nvim-lspconfig, it would do the same thing.
 -- come to think of it, it might be better because then lspconfig doesnt have to be called before lsp attach?
 -- but you would still end up triggering on a FileType event anyway, so, it makes little difference.
-vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('nixCats-lsp-attach', { clear = true }),
-  callback = function(event)
-    require('myLuaConf.LSPs.caps-on_attach').on_attach(vim.lsp.get_client_by_id(event.data.client_id), event.buf)
-  end
-})
+-- vim.api.nvim_create_autocmd('LspAttach', {
+--   group = vim.api.nvim_create_augroup('nixCats-lsp-attach', { clear = true }),
+--   callback = function(event)
+--     require('config.LSPs.caps-on_attach').on_attach(vim.lsp.get_client_by_id(event.data.client_id), event.buf)
+--   end
+-- })
 
 require('lze').load {
   {
@@ -113,9 +112,9 @@ require('lze').load {
       if require('nixCatsUtils').isNixCats then
         for server_name, cfg in pairs(servers) do
           require('lspconfig')[server_name].setup({
-            capabilities = require('myLuaConf.LSPs.caps-on_attach').get_capabilities(server_name),
+            capabilities = require('config.LSPs.caps-on_attach').get_capabilities(server_name),
             -- this line is interchangeable with the above LspAttach autocommand
-            -- on_attach = require('myLuaConf.LSPs.caps-on_attach').on_attach,
+            on_attach = require('config.LSPs.caps-on_attach').on_attach,
             settings = cfg,
             filetypes = (cfg or {}).filetypes,
             cmd = (cfg or {}).cmd,
@@ -131,9 +130,9 @@ require('lze').load {
         mason_lspconfig.setup_handlers {
           function(server_name)
             require('lspconfig')[server_name].setup {
-              capabilities = require('myLuaConf.LSPs.caps-on_attach').get_capabilities(server_name),
+              capabilities = require('config.LSPs.caps-on_attach').get_capabilities(server_name),
               -- this line is interchangeable with the above LspAttach autocommand
-              -- on_attach = require('myLuaConf.LSPs.caps-on_attach').on_attach,
+              on_attach = require('config.LSPs.caps-on_attach').on_attach,
               settings = servers[server_name],
               filetypes = (servers[server_name] or {}).filetypes,
             }

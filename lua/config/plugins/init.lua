@@ -1,6 +1,6 @@
 local colorschemeName = nixCats('colorscheme')
 if not require('nixCatsUtils').isNixCats then
-  colorschemeName = 'onedark'
+  colorschemeName = 'catppuccin'
 end
 -- Could I lazy load on colorscheme with lze?
 -- sure. But I was going to call vim.cmd.colorscheme() during startup anyway
@@ -48,9 +48,9 @@ if nixCats('general.extra') then
 end
 
 require('lze').load {
-  { import = "myLuaConf.plugins.telescope", },
-  { import = "myLuaConf.plugins.treesitter", },
-  { import = "myLuaConf.plugins.completion", },
+  { import = "config.plugins.telescope", },
+  { import = "config.plugins.treesitter", },
+  { import = "config.plugins.completion", },
   {
     "lazydev.nvim",
     for_cat = 'neonixdev',
