@@ -23,7 +23,7 @@ require('lze').load {
     "conform.nvim",
     for_cat = 'format',
     cmd = { "Format" },
-    -- event = "",
+    event = { "BufEnter" },
     -- ft = "",
     keys = {
       { "<leader>cf", desc = "[C]ode [F]ormat" },
