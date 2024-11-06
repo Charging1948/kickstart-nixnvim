@@ -1,4 +1,7 @@
-
+-- NOTE: Helper for checking whether pr is merged into nixos-unstable branch
+require('utils.nixpkgs-mr-check.init').setup({
+  mapping = '<leader>nc'  -- or whatever mapping you prefer
+})
 -- NOTE: various, non-plugin config
 require('config.opts_and_keys')
 
