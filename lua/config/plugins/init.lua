@@ -119,6 +119,11 @@ require('lze').load {
     end,
   },
   {
+    "vim-sleuth",
+    for_cat = 'general.always',
+    event = "DeferredUIEnter",
+  },
+  {
     "vim-startuptime",
     for_cat = 'general.extra',
     cmd = { "StartupTime" },
