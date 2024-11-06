@@ -374,7 +374,7 @@
           # will check for config in the store rather than .config
           wrapRc = true;
           configDirName = "nixCats-nvim";
-          aliases = [ "vim" "vimcat" ];
+          aliases = [ "vim" "vimcat" "nvim" ];
           # neovim-unwrapped = inputs.neovim-nightly-overlay.packages.${pkgs.system}.neovim;
         };
         # see :help nixCats.flake.outputs.packageDefinitions

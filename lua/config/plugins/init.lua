@@ -307,6 +307,8 @@ require('lze').load {
         { "<leader>r_", hidden = true },
         { "<leader>s", group = "[s]earch" },
         { "<leader>s_", hidden = true },
+        { "<leader>u", group = "[u]tilities" },
+        { "<leader>u_", hidden = true },
         { "<leader>t", group = "[t]oggles" },
         { "<leader>t_", hidden = true },
         { "<leader>w", group = "[w]orkspace" },

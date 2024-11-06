@@ -1,7 +1,3 @@
--- NOTE: Helper for checking whether pr is merged into nixos-unstable branch
-require('utils.nixpkgs-mr-check.init').setup({
-  mapping = '<leader>nc'  -- or whatever mapping you prefer
-})
 -- NOTE: various, non-plugin config
 require('config.opts_and_keys')
 
@@ -33,3 +29,7 @@ if nixCats('format') then
 end
 -- NOTE: I didnt actually include any linters or formatters in this configuration,
 -- but it is enough to serve as an example.
+-- NOTE: Helper for checking whether pr is merged into nixos-unstable branch
+require('utils.nixpkgs-mr-check.init').setup({
+  mapping = '<leader>uM'  -- or whatever mapping you prefer
+})

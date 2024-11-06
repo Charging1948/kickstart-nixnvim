@@ -1,5 +1,3 @@
--- ~/.config/nvim/lua/nixpkgs-mr-check/init.lua
-
 local M = {}
 
 -- Helper function to extract PR number from various URL formats
@@ -42,6 +40,11 @@ local function check_pr_commits(pr_number)
   return commits
 end
 
+-- Function to create a separator line
+local function create_separator(width)
+  return string.rep("─", width)
+end
+
 -- Main function to check PR status
 function M.check_pr_under_cursor()
   -- Get URL under cursor
@@ -78,7 +81,6 @@ function M.check_pr_under_cursor()
     vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
   end
 
-
   append_line(string.format("Checking PR #%s in NixOS/nixpkgs...", pr_number))
   append_line("")
 
@@ -92,6 +94,9 @@ function M.check_pr_under_cursor()
   append_line(string.format("Found %d commits:", #commits))
   append_line("")
 
+  -- Track commits not in unstable
+  local missing_commits = {}
+
   -- Show results
   for _, commit in ipairs(commits) do
     local symbol = commit.in_unstable and "✓" or "⨯"
@@ -100,13 +105,49 @@ function M.check_pr_under_cursor()
       commit.hash:sub(1, 7),
       commit.in_unstable and "in nixos-unstable" or "not in nixos-unstable"
     ))
+
+    if not commit.in_unstable then
+      table.insert(missing_commits, commit.hash:sub(1, 7))
+    end
   end
+
+  -- Add prominent summary message
+  append_line("")
+  append_line(create_separator(width - 2))
+  append_line("")
+
+  if #missing_commits == 0 then
+    append_line("🎉 STATUS: All commits have been merged into nixos-unstable! 🎉")
+    append_line("You can safely remove any temporary fixes related to this PR.")
+  else
+    append_line("⚠️  ATTENTION: Some commits are still missing from nixos-unstable! ⚠️")
+    append_line(string.format("Missing commits: %s", table.concat(missing_commits, ", ")))
+    append_line("Keep any temporary fixes related to this PR.")
+  end
+
+  append_line("")
+  append_line(create_separator(width - 2))
 
   -- Add close keybinding
   vim.api.nvim_buf_set_keymap(buf, 'n', 'q', ':close<CR>', {
     noremap = true,
     silent = true
   })
+
+  -- Also send a notification
+  if #missing_commits == 0 then
+    vim.notify(
+      string.format("PR #%s: All commits are in nixos-unstable!", pr_number),
+      vim.log.levels.INFO,
+      { title = "NixPkgs PR Check" }
+    )
+  else
+    vim.notify(
+      string.format("PR #%s: %d commit(s) still missing from nixos-unstable", pr_number, #missing_commits),
+      vim.log.levels.WARN,
+      { title = "NixPkgs PR Check" }
+    )
+  end
 end
 
 -- Set up command and optional keybinding
