@@ -9,11 +9,11 @@ return {
     -- ft = "",
     -- keys = "",
     -- colorscheme = "",
-    load = function (name)
-        vim.cmd.packadd(name)
-        vim.cmd.packadd("nvim-treesitter-textobjects")
+    load = function(name)
+      vim.cmd.packadd(name)
+      vim.cmd.packadd("nvim-treesitter-textobjects")
     end,
-    after = function (plugin)
+    after = function(plugin)
       -- [[ Configure Treesitter ]]
       -- See `:help nvim-treesitter`
       require('nvim-treesitter.configs').setup {
