@@ -161,7 +161,7 @@ require('lze').load {
   {
     "grug-far.nvim",
     for_cat = 'general.extra',
-    event = "DeferredUIEnter",
+    -- event = "DeferredUIEnter",
     cmd = { "GrugFar" },
     keys = {
       {
@@ -185,6 +185,23 @@ require('lze').load {
       require('grug-far').setup({
         headerMaxWidth = 80
       })
+    end,
+  },
+  {
+    "cord.nvim",
+    for_cat = 'general.extra',
+    event = "DeferredUIEnter",
+    keys = {
+      {
+        "<leader>uP",
+        "<cmd>CordTogglePresence<cr>",
+        mode = { "n" },
+        desc = "Toggle [P]resence for Discord",
+      },
+    },
+
+    after = function(plugin)
+      require('cord').setup({})
     end,
   },
   -- {
