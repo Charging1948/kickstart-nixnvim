@@ -157,6 +157,7 @@
             };
             languages = {
               go = with pkgs; [
+                go
                 gopls
                 gotools
                 go-tools
