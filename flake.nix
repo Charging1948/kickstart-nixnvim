@@ -25,6 +25,8 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixCats.url = "github:BirdeeHub/nixCats-nvim";
 
+    # neorg-overlay.url = "github:nvim-neorg/nixpkgs-neorg-overlay";
+
     # see :help nixCats.flake.inputs
     # If you want your plugin to be loaded by the standard overlay,
     # i.e. if it wasnt on nixpkgs, but doesnt have an extra build step.
@@ -95,6 +97,8 @@
               # use `pkgs.neovimPlugins`, which is a set of our plugins.
               (utils.standardPluginOverlay inputs)
               # add any other flake overlays here.
+
+              # neorg-overlay.overlays.default
             ];
           in
           {
@@ -246,6 +250,11 @@
             markdown = with pkgs.vimPlugins; [
               markdown-preview-nvim
             ];
+            neorg = with pkgs.vimPlugins; [
+              # TODO: Add neorg overlay 
+              # neorg
+              # neorg-telescope
+            ];
             neonixdev = with pkgs.vimPlugins; [
               lazydev-nvim
             ];
@@ -298,6 +307,8 @@
                 undotree
                 indent-blankline-nvim
                 vim-startuptime
+                grug-far-nvim
+                nvim-autopairs
                 # If it was included in your flake inputs as plugins-hlargs,
                 # this would be how to add that plugin in your config.
                 # pkgs.neovimPlugins.hlargs
