@@ -1,3 +1,9 @@
+local M = {}
+
+if nixCats("languages.latex") then
+  M.tex = { 'chktex' }
+end
+
 require('lze').load {
   {
     "nvim-lint",
@@ -7,25 +13,31 @@ require('lze').load {
     -- ft = "",
     -- keys = "",
     -- colorscheme = "",
-    after = function (plugin)
+    after = function(plugin)
       require('lint').linters_by_ft = {
         -- NOTE: download some linters in lspsAndRuntimeDeps
         -- and configure them here
-        go = {'golangcilint'},
-        python = {'ruff'},
-        lua = {'selene'},
-        sql = {'sqlfluff'},
-        nix = {'deadnix', 'statix'},
-        html = {'tidy'},
+        astro = { 'oxlint' },
+        svelte = { 'oxlint' },
+        vue = { 'oxlint' },
+        bash = { 'bash', 'shellcheck' },
+        fish = { 'fish' },
+        go = { 'golangcilint' },
+        python = { 'ruff' },
+        lua = { 'selene' },
+        sql = { 'sqlfluff' },
+        nix = { 'deadnix', 'statix' },
+        html = { 'tidy' },
+        tex = M.tex or {},
         -- markdown = {'vale',},
-        editorconfig = { 'editorconfig_checker' },
-        javascript = { 'deno' },
-        typescript = { 'deno' },
-        env = {'dotenv_linter'},
-        yaml = {'yamllint'},
+        editorconfig = { 'editorconfig-checker' },
+        javascript = { 'oxlint' },
+        typescript = { 'oxlint' },
+        env = { 'dotenv_linter' },
+        yaml = { 'yamllint' },
       }
 
-      vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
         callback = function()
           require("lint").try_lint()
         end,

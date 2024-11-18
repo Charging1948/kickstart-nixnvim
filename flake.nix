@@ -24,8 +24,12 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixCats.url = "github:BirdeeHub/nixCats-nvim";
-
-    # neorg-overlay.url = "github:nvim-neorg/nixpkgs-neorg-overlay";
+    rustaceanvim.url = "github:mrcjkb/rustaceanvim";
+    neorg-overlay.url = "github:nvim-neorg/nixpkgs-neorg-overlay";
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # see :help nixCats.flake.inputs
     # If you want your plugin to be loaded by the standard overlay,
@@ -98,7 +102,9 @@
               (utils.standardPluginOverlay inputs)
               # add any other flake overlays here.
 
-              # neorg-overlay.overlays.default
+              inputs.neorg-overlay.overlays.default
+              inputs.fenix.overlays.default
+              inputs.rustaceanvim.overlays.default
             ];
           in
           {
@@ -139,6 +145,9 @@
             ];
             # these names are arbitrary.
             lint = with pkgs; [
+              bash
+              fish
+              shellcheck
               golangci-lint
               ruff
               editorconfig-checker
@@ -149,6 +158,7 @@
               yamllint
               html-tidy
               selene
+              oxlint
             ];
             # but you can choose which ones you want
             # per nvim package you export
@@ -156,6 +166,21 @@
               go = [ delve ];
             };
             languages = {
+              latex = with pkgs; [
+                texliveMedium
+              ];
+              rust = with pkgs; [
+                vscode-extensions.vadimcn.vscode-lldb.adapter
+                graphviz
+                (pkgs.fenix.complete.withComponents [
+                  "cargo"
+                  "clippy"
+                  "rust-src"
+                  "rustc"
+                  "rustfmt"
+                  "rust-analyzer"
+                ])
+              ];
               go = with pkgs; [
                 go
                 gopls
@@ -178,6 +203,8 @@
               deno
               prettierd
               nixfmt-rfc-style
+              stylua
+              templ
             ];
             neonixdev = {
               # also you can do this.
@@ -201,12 +228,27 @@
               ];
               extra = [
                 oil-nvim
+              ];
+              mini = [
+                mini-align
                 mini-icons
+                mini-ai
+                mini-indentscope
+              ];
+            };
+            languages = {
+              rust = with pkgs.vimPlugins; [
+                rustaceanvim
               ];
             };
             # You can retreive information from the
             # packageDefinitions of the package this was packaged with.
             # :help nixCats.flake.outputs.categoryDefinitions.scheme
+
+            neorg = with pkgs.vimPlugins; [
+              neorg
+              neorg-telescope
+            ];
             themer =
               with pkgs.vimPlugins;
               (builtins.getAttr categories.colorscheme {
@@ -251,14 +293,13 @@
             markdown = with pkgs.vimPlugins; [
               markdown-preview-nvim
             ];
-            neorg = with pkgs.vimPlugins; [
-              # TODO: Add neorg overlay 
-              # neorg
-              # neorg-telescope
-            ];
             neonixdev = with pkgs.vimPlugins; [
               lazydev-nvim
             ];
+            # neorg = with pkgs.vimPlugins; [
+            #   neorg-telescope
+            # ];
+
             general = {
               cmp = with pkgs.vimPlugins; [
                 # cmp stuff
@@ -311,6 +352,9 @@
                 grug-far-nvim
                 nvim-autopairs
                 cord-nvim
+                codesnap-nvim
+                todo-comments-nvim
+                trouble-nvim
                 # If it was included in your flake inputs as plugins-hlargs,
                 # this would be how to add that plugin in your config.
                 # pkgs.neovimPlugins.hlargs
@@ -389,10 +433,12 @@
             lint = true;
             format = true;
             neonixdev = true;
+            neorg = true;
             test = {
               subtest1 = true;
             };
             languages.go = true; # <- disabled but you could enable it with override
+            languages.rust = true; # <- disabled but you could enable it with override
             debug.go = true; # <- disabled but you could enable it with override
 
             # this does not have an associated category of plugins, 

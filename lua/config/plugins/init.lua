@@ -20,8 +20,8 @@ if nixCats('general.extra') then
     default_file_explorer = true,
     columns = {
       "icon",
-      "permissions",
-      "size",
+      -- "permissions",
+      -- "size",
       -- "mtime",
     },
     keymaps = {
@@ -45,6 +45,21 @@ if nixCats('general.extra') then
   })
   vim.keymap.set("n", "-", "<cmd>Oil<CR>", { noremap = true, desc = 'Open Parent Directory' })
   vim.keymap.set("n", "<leader>-", "<cmd>Oil .<CR>", { noremap = true, desc = 'Open nvim root directory' })
+
+  local icons = require("mini.icons")
+  icons.setup()
+  icons.mock_nvim_web_devicons()
+  icons.tweak_lsp_kind()
+
+
+  require('neorg').setup({
+    load = {
+      ["core.defaults"] = {},
+      -- Also load telescope integration
+      -- TODO: Setup keymaps and stuff https://github.com/nvim-neorg/neorg-telescope
+      ["core.integrations.telescope"] = {}
+    },
+  })
 end
 
 require('lze').load {
@@ -201,8 +216,65 @@ require('lze').load {
     },
 
     after = function(plugin)
-      require('cord').setup({})
+      require('cord').setup()
     end,
+  },
+  {
+    "codesnap.nvim",
+    for_cat = 'general.extra',
+    keys = {
+      { "<leader>uc", "<cmd>CodeSnap<cr>",              mode = "x", desc = "Save selected code snapshot into clipboard" },
+      { "<leader>us", "<cmd>CodeSnapSave<cr>",          mode = "x", desc = "Save selected code snapshot in ~/Pictures" },
+      { "<leader>uC", "<cmd>CodeSnapHighlight<cr>",     mode = "x", desc = "Save selected code snapshot into clipboard" },
+      { "<leader>uS", "<cmd>CodeSnapSaveHighlight<cr>", mode = "x", desc = "Save selected code snapshot in ~/Pictures" },
+    },
+  },
+  {
+    "todo-comments.nvim",
+    event = 'DeferredUIEnter',
+    for_cat = 'general.extra',
+    after = function(plugin)
+      require('todo-comments').setup()
+    end
+  },
+  {
+    "trouble.nvim",
+    cmd = "Trouble",
+    after = function(plugin)
+      require("trouble").setup()
+    end,
+    keys = {
+      {
+        "<leader>xx",
+        "<cmd>Trouble diagnostics toggle<cr>",
+        desc = "Diagnostics (Trouble)",
+      },
+      {
+        "<leader>xX",
+        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+        desc = "Buffer Diagnostics (Trouble)",
+      },
+      {
+        "<leader>cs",
+        "<cmd>Trouble symbols toggle focus=false<cr>",
+        desc = "Symbols (Trouble)",
+      },
+      {
+        "<leader>cl",
+        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+        desc = "LSP Definitions / references / ... (Trouble)",
+      },
+      {
+        "<leader>xL",
+        "<cmd>Trouble loclist toggle<cr>",
+        desc = "Location List (Trouble)",
+      },
+      {
+        "<leader>xQ",
+        "<cmd>Trouble qflist toggle<cr>",
+        desc = "Quickfix List (Trouble)",
+      },
+    },
   },
   -- {
   --   "hlargs",
@@ -370,6 +442,8 @@ require('lze').load {
         { "<leader>s_",        hidden = true },
         { "<leader>u",         group = "[u]tilities" },
         { "<leader>u_",        hidden = true },
+        { "<leader>x",         group = "trouble" },
+        { "<leader>x_",        hidden = true },
         { "<leader>t",         group = "[t]oggles" },
         { "<leader>t_",        hidden = true },
         { "<leader>w",         group = "[w]orkspace" },
