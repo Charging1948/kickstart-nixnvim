@@ -347,7 +347,7 @@
                 which-key-nvim
                 comment-nvim
                 undotree
-                indent-blankline-nvim
+                # indent-blankline-nvim
                 vim-startuptime
                 grug-far-nvim
                 nvim-autopairs
