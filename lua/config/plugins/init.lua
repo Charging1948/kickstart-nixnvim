@@ -21,7 +21,7 @@ if nixCats("general.extra") then
     columns = {
       "icon",
       -- "permissions",
-      -- "size",
+      "size",
       -- "mtime",
     },
     keymaps = {
@@ -47,7 +47,7 @@ if nixCats("general.extra") then
   vim.keymap.set("n", "<leader>-", "<cmd>Oil .<CR>", { noremap = true, desc = "Open nvim root directory" })
 end
 
-if nixCats("mini") then
+if nixCats("general.mini") then
   local icons = require("mini.icons")
   icons.setup()
   icons.mock_nvim_web_devicons()
